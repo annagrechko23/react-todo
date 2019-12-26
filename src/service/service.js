@@ -1,5 +1,5 @@
 import data from './../data';
-;
+
 let items = Object.keys(data).map(item => data[item]);
 function getItems() {
   return items

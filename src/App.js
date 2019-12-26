@@ -2,43 +2,58 @@ import React, { Component } from 'react';
 import Header from './components/Header';
 import List from './components/List';
 import Form from './components/Form';
-import Service from './service/service';
+import { connect } from 'react-redux';
+import * as actions from './modules/action';
 import './../public/index.css';
+
+const mapStateToProps = (state) => {
+  return { 
+    items: state,
+  }
+};
+const mapDispatchToProps = (dispatch) => {
+  return { 
+    addItem: (length, value) => dispatch(actions.createItem(length, value)),
+    deleteItem: (id) => dispatch(actions.deleteItem(id)),
+    markItem: (id) => dispatch(actions.markItem(id)),
+    editItem: (id, val) => dispatch(actions.editItem(id, val)),
+  }
+};
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: Service.getItems(),
+      items: [],
     }
   }
-  addItem = val => {
-    Service.addItem(val);
-    this.setState({ items: Service.getItems() })
+  addItem = value => {
+    let { addItem } = this.props;
+    addItem(this.props.items.length, value)
+    console.log('2', this.props.items.length)
   };
   deleteItem = id => {
-    Service.deleteItem(id);
-    this.setState({ items: Service.getItems() })
+    let { deleteItem } = this.props;
+    deleteItem(id)
   };
   markItem = id => {
-    Service.markItem(id);
-    this.setState({ items: Service.getItems() })
+    let { markItem } = this.props;
+    markItem(id)
   };
-  editItem = (id, title) => {
-    Service.editItem(id, title);
-    this.setState({ items: Service.getItems() })
+  editItem = (id, val) => {
+    let { editItem } = this.props;
+    editItem(id, val)
   };
   completedItems() {
-    return this.state.items.filter(item => item.done).length
+    return this.props.items.filter(item => item.done).length
   }
   render() {
 
     return (
       <div id="main">
-        <Header all={this.state.items.length} done={this.completedItems()} />
+        <Header all={this.props.items.length} done={this.completedItems()} />
         <List
-
-          items={this.state.items}
+          items={this.props.items}
           editItem={this.editItem}
           markItem={this.markItem}
           deleteItem={this.deleteItem} />
@@ -49,4 +64,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
